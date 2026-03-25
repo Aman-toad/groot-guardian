@@ -142,7 +142,7 @@ function main() {
   const timestamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
   const filename = `s1_alt_predictions_${timestamp}.json`;
   const outputPath = path.join(processedDir, filename);
-  
+
   fs.writeFileSync(outputPath, JSON.stringify(enrichedData, null, 2));
   console.log(`\nSuccess! Predictions saved to -> ${outputPath}`);
 }
