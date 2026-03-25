@@ -1,0 +1,57 @@
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { lat, lng, confidence, delta_mag } = body;
+
+    const { data, error } = await resend.emails.send({
+      from: 'SAR Monitor <onboarding@resend.dev>', // replace with your verified domain
+      to: ['amansinghcs24@pgdav.du.ac.in'], 
+      subject: '🚨 ALERT: Deforestation Anomaly Detected!',
+      text: `A deforestation anomaly has been detected!
+
+Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}
+Confidence: ${(confidence * 100).toFixed(1)}%
+Change Magnitude: ${delta_mag.toFixed(4)}
+
+Please investigate immediately.`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #ef4444; margin-top: 0;">🚨 Deforestation Anomaly Detected!</h2>
+          <p style="color: #475569; font-size: 16px;">A high-confidence deforestation event has been logged by the SAR processing pipeline.</p>
+          <div style="background-color: #f8fafc; padding: 16px; border-radius: 6px; margin: 20px 0;">
+            <ul style="list-style: none; padding: 0; margin: 0; color: #334155; font-size: 15px;">
+              <li style="margin-bottom: 8px;"><strong>📍 Latitude:</strong> ${lat.toFixed(6)}</li>
+              <li style="margin-bottom: 8px;"><strong>📍 Longitude:</strong> ${lng.toFixed(6)}</li>
+              <li style="margin-bottom: 8px;"><strong>🎯 Confidence:</strong> ${(confidence * 100).toFixed(1)}%</li>
+              <li><strong>⚖️ Change Magnitude:</strong> ${delta_mag.toFixed(4)}</li>
+            </ul>
+          </div>
+          <p style="color: #64748b; font-size: 14px;">Please initialize field verification or review secondary satellite imagery for this coordinate immediately.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json({ success: false, error }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Alert sent successfully',
+      id: data?.id,
+    });
+
+  } catch (error) {
+    console.error('Failed to send alert:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to send alert' },
+      { status: 500 }
+    );
+  }
+}
