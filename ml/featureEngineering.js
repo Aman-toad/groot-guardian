@@ -22,7 +22,8 @@ function addEngineeredFeatures(data) {
       VH_norm: VH_delta / Math.abs(safeVHBase),
 
       // 3. Magnitude
-      delta_mag: Math.sqrt(VV_delta ** 2 + VH_delta ** 2)
+      delta_mag: Math.sqrt(VV_delta ** 2 + VH_delta ** 2),
+
     };
   });
 }

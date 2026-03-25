@@ -48,14 +48,9 @@ function runAdaptiveLinearThreshold(data, k = 1.5) {
     const confidence = (1 - Math.exp(-distScore));
 
     return {
+      ...row,
       lat: row.lat != null ? row.lat : row.latitude,
       lng: row.lng != null ? row.lng : row.longitude,
-      VV_baseline: row.VV_baseline,
-      VH_baseline: row.VH_baseline,
-      VV_current: row.VV_current,
-      VH_current: row.VH_current,
-      VV_delta: row.VV_delta,
-      VH_delta: row.VH_delta,
       deforestation: isDeforested,
       confidence: Number((confidence).toFixed(4))
     };
